@@ -1,93 +1,23 @@
 <template>
-  <div class="home">
+  <div class="wrap">
       <div class="chat-wrap">
           <div class="left-wrap">
               <div class="user">
                   <div class="avatar-wrap">
-                      <img :src="avatar" alt="">
+                      <img :src="myInfo.avatar" alt="">
                   </div>
-                  <div class="user-nickname">司马懿</div>
+                  <div class="user-nickname" :title="myInfo.nickname">{{myInfo.nickname}}</div>
               </div>
               <div class="user-list-wrap">
                   <h4>当前在线列表</h4>
                   <div class="user-list">
                         <ul>
-                            <li>
+                            <li v-for="(item,index) in userList" :key="index">
                                 <div class="user">
                                     <div class="avatar-wrap">
-                                        <img :src="avatar" alt="">
+                                        <img :src="item.avatar" alt="">
                                     </div>
-                                    <div class="user-nickname">司马懿</div>
-                                </div>                          
-                            </li>                      <li>
-                                <div class="user">
-                                    <div class="avatar-wrap">
-                                        <img :src="avatar" alt="">
-                                    </div>
-                                    <div class="user-nickname">司马懿</div>
-                                </div>                          
-                            </li>                      <li>
-                                <div class="user">
-                                    <div class="avatar-wrap">
-                                        <img :src="avatar" alt="">
-                                    </div>
-                                    <div class="user-nickname">司马懿</div>
-                                </div>                          
-                            </li>                      <li>
-                                <div class="user">
-                                    <div class="avatar-wrap">
-                                        <img :src="avatar" alt="">
-                                    </div>
-                                    <div class="user-nickname">司马懿</div>
-                                </div>                          
-                            </li>                      <li>
-                                <div class="user">
-                                    <div class="avatar-wrap">
-                                        <img :src="avatar" alt="">
-                                    </div>
-                                    <div class="user-nickname">司马懿</div>
-                                </div>                          
-                            </li>                      <li>
-                                <div class="user">
-                                    <div class="avatar-wrap">
-                                        <img :src="avatar" alt="">
-                                    </div>
-                                    <div class="user-nickname">司马懿</div>
-                                </div>                          
-                            </li>                      <li>
-                                <div class="user">
-                                    <div class="avatar-wrap">
-                                        <img :src="avatar" alt="">
-                                    </div>
-                                    <div class="user-nickname">司马懿</div>
-                                </div>                          
-                            </li>                      <li>
-                                <div class="user">
-                                    <div class="avatar-wrap">
-                                        <img :src="avatar" alt="">
-                                    </div>
-                                    <div class="user-nickname">司马懿</div>
-                                </div>                          
-                            </li>                      <li>
-                                <div class="user">
-                                    <div class="avatar-wrap">
-                                        <img :src="avatar" alt="">
-                                    </div>
-                                    <div class="user-nickname">司马懿</div>
-                                </div>                          
-                            </li>                      <li>
-                                <div class="user">
-                                    <div class="avatar-wrap">
-                                        <img :src="avatar" alt="">
-                                    </div>
-                                    <div class="user-nickname">司马懿</div>
-                                </div>                          
-                            </li>                      <li>
-                                <div class="user">
-                                    <div class="avatar-wrap">
-                                        <img :src="avatar" alt="">
-                                    </div>
-                                    <div class="user-nickname">司马懿</div>
+                                    <div class="user-nickname" :title="item.nickname">{{item.nickname}}</div>
                                 </div>                          
                             </li>
                         </ul>
@@ -95,26 +25,19 @@
               </div>
           </div>
           <div class="right-wrap">
-              <div class="room-name">群聊(1)</div>
+              <div class="room-name">群聊({{userList.length}})</div>
 
               <div class="room-content" ref="roomContent">
-                  <div class="message my-message">
-                        <div class="message-content">测试</div>
-                        <div class="message-avatar">
-                            <img :src="avatar" alt="">
-                        </div>
+                  <div class="message" v-for="(item,index) in messageList" :key="index" 
+                  :class="{'my-message':item.user.nickname==myInfo.nickname,
+                  'other-message':item.user.nickname!=myInfo.nickname}">
+                  <div  :class="{'message-right':item.user.nickname!=myInfo.nickname}">
+                      <div class="message-user" v-show="item.user.nickname!=myInfo.nickname">{{item.user.nickname}}</div>
+                      <div class="message-content">{{item.content}}</div>
                   </div>
-                                    <div class="message other-message">
-                        <div class="message-content">那我也测试</div>
+                        
                         <div class="message-avatar">
-                            <img :src="avatar" alt="">
-                        </div>
-                  </div>
-
-                  <div class="message my-message" v-for="(item,index) in myMessage" :key="index">
-                        <div class="message-content">{{item}}</div>
-                        <div class="message-avatar">
-                            <img :src="avatar" alt="">
+                            <img :src="item.user.avatar" alt="">
                         </div>
                   </div>
               </div>
@@ -137,17 +60,22 @@ export default {
     data(){
         return {
             msg:"",
-            myMessage:[],
+            myInfo:{},
+            messageList:[],
+            userList:[],
             avatar:require('@/assets/avatar.jpg'),
             file:require('@/assets/file.png'),
             websocket:null
         }
     },
     created(){
-    //   this.init();
+      this.init();
+        let nickname = this.$route.params.nickname
+        let avatar = this.$route.params.avatar
+        this.myInfo = {nickname,avatar}
     },
     destroyed() {
-    //   this.websocket.close() //离开路由之后断开websocket连接
+      this.websocket.close() //离开路由之后断开websocket连接
     },    
     methods:{
         init(){
@@ -159,36 +87,72 @@ export default {
             this.websocket.onclose = this.websocketclose;
         },
         websocketonopen(){ //连接建立之后
-            this.websocketsend('用户已经进入')
-            // let actions = {"test":"12345"};
-            // this.websocketsend(JSON.stringify(actions));
+            let actions = {
+                info:  `${this.myInfo.nickname} 进入了群聊`,
+                user: {
+                    nickname:this.myInfo.nickname,
+                    avatar:this.myInfo.avatar
+                },
+                type:0
+            }
+           
+            this.websocketsend(JSON.stringify(actions));
         },
         websocketonerror(){//连接建立失败重连
             this.init();
         },
         websocketonmessage(e){ //数据接收
-            // const redata = JSON.parse(e.data);
             const redata = e.data
-            console.log(redata)
+            let jsonData = JSON.parse(redata)
+            if(jsonData.type == 0){
+                this.userInOut(jsonData.info)
+                this.updateUserList(jsonData.userlist)
+            }
+            else
+                this.addMessage(jsonData)
         },
         websocketsend(Data){//数据发送
             this.websocket.send(Data);
         },
         websocketclose(e){  //关闭
             console.log('断开连接',e);
-        },        
-        sendMessage(){
-            // alert(this.msg)
-            this.websocketsend(this.msg)
         },
         sendTest(){
             let msg = this.$refs.content.innerText
-            this.myMessage.push(msg)
-            this.$refs.content.innerText = ""
+            // 空 || 空格 || 换行
+            if(msg.match(/^\s*$/)) alert('不准为空')
+            else{
+                let actions = {
+                    user: {
+                        nickname:this.myInfo.nickname,
+                        avatar:this.myInfo.avatar
+                    },
+                    type:1,
+                    content:msg
+                }            
+                this.websocketsend(JSON.stringify(actions));
+                this.$refs.content.innerText = ""
+            }
+        },
+        userInOut(info){
+            let roomContent = this.$refs.roomContent
+            let tip = document.createElement('div')
+            tip.className = 'tip'
+            tip.innerText = info
+            roomContent.appendChild(tip)
+            this.scrollToBottom()
+        },
+        addMessage(redata){
+            this.messageList.push(redata)
+            console.log(redata)
+            this.scrollToBottom()
+        },
+        updateUserList(userlist){
+            this.userList = userlist
+        },
+        scrollToBottom(){
             this.$nextTick(()=>{
                 this.$refs.roomContent.scrollTop = this.$refs.roomContent.scrollHeight
-                // console.log('scrolltop'+this.$refs.roomContent.scrollTop)
-                // console.log('scrollheight'+this.$refs.roomContent.scrollHeight)
             })
         }
     }
@@ -220,7 +184,7 @@ export default {
         background: #fff;
     }
 
-    .home {
+    .wrap {
         width: 100vw;
         height: 100vh;
         background-color: @bgColor;
@@ -233,7 +197,7 @@ export default {
         width: 800px;
         height: 600px;
         border: 1px solid #333;
-        // box-sizing: border-box;
+        box-sizing: border-box;
         display: flex;
     }
 
@@ -242,6 +206,7 @@ export default {
         padding: 10px 10px 10px 0;
         display: flex;
         align-items: center;
+        cursor: default;
 
         .avatar-wrap {
             width: @avatarSize;
@@ -251,7 +216,14 @@ export default {
             img {
                 width: 100%;
             }
-        }        
+        }
+        
+        .user-nickname {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            flex: 1;            
+        }
     }
 
     .left-wrap {
@@ -294,6 +266,13 @@ export default {
             padding: 10px;
             height: 350px;
             overflow-y: auto;
+
+            .tip {
+                text-align: center;
+                font-size: 12px;
+                color:#b7b7b7;
+                margin: 5px 0;
+            }
         }
 
         .room-edit {
@@ -351,6 +330,17 @@ export default {
                 height: 100%
             }
         }
+
+        .message-right {
+            margin-top: -14px;
+        }
+
+        .message-user {
+            font-size: 12px;
+            color: #b7b7b7;
+            text-align: left;
+            padding: 5px 0;
+        }
         
         .message-content {
             min-height: @avatarSize;
@@ -399,6 +389,7 @@ export default {
         .message-content {
             background-color: #fff;
             position: relative;
+            display: inline-block;
 
             &::after {
                 content: "";

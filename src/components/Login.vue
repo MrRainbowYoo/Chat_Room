@@ -13,10 +13,10 @@
               <div class="label">用户名</div>
               <input type="text" required placeholder="请输入用户名" list="usernamelist" v-model="nickname">
               <datalist id="usernamelist">
-                  <option value="11"></option>
-                  <option value="12"></option>
-                  <option value="13"></option>
-                  <option value="14"></option>
+                  <option value="测试人员1"></option>
+                  <option value="测试人员2"></option>
+                  <option value="测试人员3"></option>
+                  <option value="测试人员4"></option>
               </datalist>
           </div>
           <button class="login-btn" @click="login">立即登录</button>

@@ -12,6 +12,8 @@ Vue.use(ElementUI)
 Vue.use(Router)
 Vue.config.productionTip = false
 
+console.log = function(){}
+
 const router = new Router({
   routes : [
     {

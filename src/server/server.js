@@ -2,6 +2,8 @@ let ws = require('nodejs-websocket');
 let userlist = []
 console.log('开始建立连接...')
 
+let fs = require('fs')
+
 let server = ws.createServer(function (conn) {
     conn.on('text', function (str) {
         console.log('浏览器给服务端收到的信息为:' + str)
@@ -12,6 +14,7 @@ let server = ws.createServer(function (conn) {
         updateUserList(user)
         strObj.userlist = userlist
         broadcast(JSON.stringify(strObj))
+        writeLog(JSON.stringify(strObj))
     })
 
     conn.on('close', function (code) {
@@ -27,6 +30,7 @@ let server = ws.createServer(function (conn) {
             userlist
         }
         broadcast(JSON.stringify(strObj))
+        writeLog(JSON.stringify(strObj))
         // console.log(conn)
     });
 
@@ -37,6 +41,7 @@ let server = ws.createServer(function (conn) {
 
 let http = require('http');
 let url = require('url');
+const { json } = require('body-parser');
 http.createServer((req,res)=>{
     res.writeHead(200,{'Content-type':'text/plain;charset=utf-8',"Access-Control-Allow-Origin": "*"});
     let param = url.parse(req.url,true).query
@@ -63,6 +68,16 @@ function updateUserList(user){
     for(let item of userlist)
         nameList.push(item.nickname)
     nameList.includes(user.nickname) || userlist.push(user)
+}
+
+function writeLog(msg){
+    let time = new Date()
+    time.toLocaleString()
+    msg = time+' '+msg
+    fs.appendFile('./log.txt',`${msg}\n`,function(error){
+        if(error)
+            console.log('写入失败')
+    })
 }
 
 console.log('WebSocket建立完毕');

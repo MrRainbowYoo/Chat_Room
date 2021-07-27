@@ -2,13 +2,11 @@
 >一款仿微信风格的在线聊天室。这是我个人练练手的小项目，前端部分使用Vue2，后端部分使用Nodejs编写。包括登录、实时显示在线用户列表、用户进出聊天室提示、实时文字聊天等功能。
 
 >注：暂不支持图片等非文本格式文件传输，后续可能会加入。
-***
 
 ## 技术栈
 + Vue + VueRouter
 + NodeJS
 + WebSocket (nodejs-websocket)
-***
 
 ## 运行截图
 + 登录页面
@@ -21,7 +19,6 @@
 ![聊天室页面](public/screenshot/page_chatroom.jpg "聊天室页面")
 
 + ![聊天室页面](public/screenshot/page_chatroom2.jpg "聊天室页面")
-***
 
 ## 运行项目
     # 克隆项目到本地
@@ -40,7 +37,6 @@
 
     # 前端启动
     npm run serve
-***
 
 ## 结语
 本项目仅供个人学习研究使用，禁止用于商业或非法用途。

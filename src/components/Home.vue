@@ -1,5 +1,5 @@
 <template>
-  <div class="wrap">
+  <div class="wrap" @click="showEmoji = false">
       <div class="chat-wrap">
           <div class="left-wrap">
               <div class="user">
@@ -43,8 +43,12 @@
               </div>
 
               <div class="room-edit">
-                <div class="edit-tools"><img :src="file" alt=""></div>
-                <div class="edit-wrap" contenteditable ref="content" @keydown.ctrl.enter="sendTest"></div>
+                <Emoji class="emoji" :field="'content'" :showEmoji="showEmoji" @hide="hideEmoji"></Emoji>
+                <div class="edit-tools">
+                    <img :src="smile" alt="" @click.stop="openEmoji">
+                    <img :src="file" alt="">
+                </div>
+                <textarea class="edit-wrap" id="content" ref="content" @keydown.ctrl.enter="sendTest" placeholder="说点什么..."></textarea>
                 <div class="send-wrap">
                     <span>按下Ctrl+Enter发送</span>
                     <button @click="sendTest">发送</button>
@@ -56,6 +60,8 @@
 </template>
 
 <script>
+import Emoji from './Emoji.vue'
+
 export default {
     data(){
         return {
@@ -65,8 +71,13 @@ export default {
             userList:[],
             avatar:require('@/assets/avatar.jpg'),
             file:require('@/assets/file.png'),
-            websocket:null
+            smile:require('@/assets/smile.png'),
+            websocket:null,
+            showEmoji:false
         }
+    },
+    components:{
+        Emoji
     },
     created(){
       this.init();
@@ -78,6 +89,12 @@ export default {
       this.websocket.close() //离开路由之后断开websocket连接
     },    
     methods:{
+        openEmoji(){
+            this.showEmoji=true
+        },
+        hideEmoji(){
+            this.showEmoji = false
+        },
         init(){
             const url = "ws://localhost:8001"
             this.websocket = new WebSocket(url)
@@ -118,7 +135,7 @@ export default {
             console.log('断开连接',e);
         },
         sendTest(){
-            let msg = this.$refs.content.innerText
+            let msg = this.$refs.content.value
             // 空 || 空格 || 换行
             if(msg.match(/^\s*$/)) alert('不准为空')
             else{
@@ -131,7 +148,7 @@ export default {
                     content:msg
                 }            
                 this.websocketsend(JSON.stringify(actions));
-                this.$refs.content.innerText = ""
+                this.$refs.content.value = ""
             }
         },
         userInOut(info){
@@ -164,6 +181,11 @@ export default {
     @leftColor:#2e3238;
     @rightColor:#eeeeee;
     @avatarSize: 40px;
+
+    .emoji{
+        bottom: 110%;
+        left: -30%;
+    }
 
     /* 设置滚动条样式 */
     /* 滚动条整体样式 */
@@ -279,24 +301,40 @@ export default {
             flex: 1;
             display: flex;
             flex-direction: column;
+            position: relative;
 
             .edit-tools {
                 padding: 5px 0;
                 height: 20px;
 
                 img {
+                    margin: 0 5px;
                     height: 100%;
                     cursor: pointer;
                 }
             }
 
             .edit-wrap {
+                background-color: @rightColor;
+                border: none;
                 outline: none;
                 height: 130px;
                 overflow-y: scroll;
                 max-width: 100%;
-                word-wrap: break-word;            
+                word-wrap: break-word;
+                resize:none;
+                color: #2c3e50;      
+                font-size: 16px;   
+                font-family: Avenir,Helvetica,Arial,sans-serif;   
             }
+
+            // .edit-wrap:empty::before {
+			// 	content: attr(placeholder);
+			// 	font-size: 14px;
+			// 	color: #CCC;
+			// 	line-height: 21px;
+			// 	padding-top: 20px;
+			// }
 
             .send-wrap {
                 height: 30px;

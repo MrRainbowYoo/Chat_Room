@@ -20,6 +20,9 @@
 
 + ![聊天室页面](public/screenshot/page_chatroom2.jpg "聊天室页面")
 
++ Emoji组件
+![Emoji组件](public/screenshot/emoji.jpg "Emoji组件")
+
 ## 运行项目
     # 克隆项目到本地
     git clone https://github.com/MrRainbowYoo/Chat_Room.git
@@ -37,6 +40,13 @@
 
     # 前端启动
     npm run serve
+
+## 版本日志
+#### V0.0.2 (2021-08-09)
+- 新增Emoji组件（可获取光标位置插入）
+
+#### V0.0.1 (2021-07-27)
+- 初始版本上线
 
 ## 结语
 本项目仅供个人学习研究使用，禁止用于商业或非法用途。
